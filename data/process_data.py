@@ -4,6 +4,12 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+    """
+    This function loads csv raw data determined by the user.
+    :param messages_filepath: CSV file with raw messages data.
+    :param categories_filepath: CSV file with raw categories data.
+    :return: Merged dataframe with messages and its categories.
+    """
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     df_merged = messages.merge(categories, on='id')
@@ -11,6 +17,12 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    """
+    This function receives a dataframe with the merged data and cleans it creating dummy variables together with
+    duplicates dropping.
+    :param df: Merged pandas Datata Frame
+    :return: Cleaned data frame.
+    """
     categories = df['categories'].str.split(pat=';', expand=True)
     row = categories.iloc[0]
     category_colnames = [x[:-2] for x in row]
@@ -24,6 +36,12 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    """
+    This function receives the final cleaned and wrangled dataset and uploads it to an sql local database.
+    :param df: Final cleaned and parsed dataset.
+    :param database_filename: String containing the database name.
+    :return: None
+    """
     engine = create_engine(f'sqlite:///{database_filename}')
     df.to_sql('message', engine, index=False)
 
