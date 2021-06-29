@@ -51,6 +51,8 @@ def main():
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
 
+        print(database_filepath)
+
         print('Loading data...\n    MESSAGES: {}\n    CATEGORIES: {}'
               .format(messages_filepath, categories_filepath))
         df = load_data(messages_filepath, categories_filepath)
