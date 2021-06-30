@@ -18,6 +18,12 @@ nltk.download('wordnet')
 nltk.download('averaged_perceptron_tagger')
 
 def load_data(database_filepath):
+    """
+    This function loads the data from the database created in the process data.py file and gets the input | labels from
+    the data, together with the labels columns.
+    :param database_filepath: String containing the name of the database created before.
+    :return: input values for the model, labels (ground truth) and ground truth columns.
+    """
     engine = create_engine(f'sqlite:///{database_filepath}')
     df = pd.read_sql_table('message', engine)
     X = df['message']
@@ -25,6 +31,11 @@ def load_data(database_filepath):
     return X, Y, Y.columns
 
 def tokenize(text):
+    """
+    This function takes input text from the input data, tokenizes, lemmatizes and cleans it for NLP purposes.
+    :param text: String (sentence) for tokenization.
+    :return: Tokenized list of words.
+    """
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
 
@@ -37,6 +48,10 @@ def tokenize(text):
 
 
 def build_model():
+    """
+    Creates a sklearn pipeline for training model together with previous data-treatment processing.
+    :return: Model creation pipeline.
+    """
     pipeline = Pipeline([
     ('vect', CountVectorizer(tokenizer=tokenize)),
     ('tfidf', TfidfTransformer()),
@@ -49,6 +64,14 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """
+    This function takes real testing data and gets metrics for the performance of the model.
+    :param model: Pipeline created in the build model function.
+    :param X_test: Input data never seen by the model.
+    :param Y_test: Ground truth data never seen by the model.
+    :param category_names: Classification names for the ground truth values.
+    :return: None
+    """
     y_pred = model.predict(X_test)
     y_pred = pd.DataFrame(y_pred, columns = category_names)
 
@@ -61,6 +84,12 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    """
+    This function saves the model to a desired path.
+    :param model: Final trained pipeline | model.
+    :param model_filepath: String of the desired path for the introduced model.
+    :return: None
+    """
     pkl.dump(model, open(model_filepath, 'wb'))
 
 
