@@ -12,7 +12,7 @@ Folders with their respective job are:
     * run.py file (Executes webpage in an allocated port of your private ip)
     * templates Folder (HTML, CSS and resources)
         * go.html, master.html files (main pages)
-        * css, res folders (contain css code and images used)
+    * static, res folders (contain css code and image used)
 * data Folder (csv raw data, db treated data and python data wrangling script)
     * disaster_categories.csv (raw categories according to id number)
     * disaster_messages.csv (raw messages with its original version)

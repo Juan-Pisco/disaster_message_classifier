@@ -1,19 +1,20 @@
 import json
+import os
+
 import plotly
 import pandas as pd
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
-
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
-#from sklearn.externals import joblib
 from sqlalchemy import create_engine
 import joblib
-from sklearn.ensemble import RandomForestClassifier
+
 
 app = Flask(__name__)
+
 
 def tokenize(text):
     tokens = word_tokenize(text)
@@ -25,6 +26,7 @@ def tokenize(text):
         clean_tokens.append(clean_tok)
 
     return clean_tokens
+
 
 # load data
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
@@ -38,15 +40,13 @@ model = joblib.load("../models/classifier.pkl")
 @app.route('/')
 @app.route('/index')
 def index():
-    
     # extract data needed for visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
-    
+
     aid_count = df.groupby('aid_related').count()['message']
     earthquake_count = df.groupby('earthquake').count()['message']
-    
-    
+
     # create visuals
     graphs = [
         {
@@ -67,7 +67,7 @@ def index():
                 }
             }
         },
-                {
+        {
             'data': [
                 Bar(
                     x=['No', 'Yes'],
@@ -75,7 +75,7 @@ def index():
                 ),
 
             ],
-            
+
             'layout': {
                 'title': 'Distribution of Aid related messages',
                 'yaxis': {
@@ -94,7 +94,7 @@ def index():
                 ),
 
             ],
-            
+
             'layout': {
                 'title': 'Distribution of Earthquake related messages',
                 'yaxis': {
@@ -104,15 +104,14 @@ def index():
                     'title': "Earthquake related"
                 }
             },
-           
+
         },
-        
+
     ]
-    
+
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
-    
     # render web page with plotly graphs
     return render_template('master.html', ids=ids, graphJSON=graphJSON)
 
@@ -121,7 +120,7 @@ def index():
 @app.route('/go')
 def go():
     # save user input in query
-    query = request.args.get('query', '') 
+    query = request.args.get('query', '')
 
     # use model to predict classification for query
     classification_labels = model.predict([query])[0]
